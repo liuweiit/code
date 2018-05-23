@@ -10,6 +10,7 @@ let gulp   = require('gulp'),
     server = require('gulp-connect'),
     runSequence = require('run-sequence'),
     watch  = require('gulp-watch'),
+    sass   = require('gulp-sass'),
 
     mainSrc = 'content/src/',
     //源文件
@@ -17,7 +18,8 @@ let gulp   = require('gulp'),
         html:mainSrc+'html/**/*.html',
         js:mainSrc+'js/**/*.js',
         css:mainSrc+'css/**/*.css',
-        img:mainSrc+'img/**/*.{jpg,png,gif}'
+        img:mainSrc+'img/**/*.{jpg,png,gif}',
+        sass:mainSrc+'css/**/*.scss',
     },
     mainPack = 'content/store/',
     //打包文件路径
@@ -25,7 +27,7 @@ let gulp   = require('gulp'),
         html:mainPack+'html',
         js:mainPack+'js',
         css:mainPack+'css',
-        img:mainPack+'img'
+        img:mainPack+'img',
     };
     //资源文件跨域配置
     var cors = function(req, res, next) {
@@ -47,6 +49,11 @@ let gulp   = require('gulp'),
     gulp.task('copy-demo', function() {
         return gulp.src(srcPath.html).pipe((gulp.dest(packPath.html))).pipe(server.reload());
     });
+
+    gulp.task('sass',function(){ // sass 直接编译 压缩至store文件夹内
+        return gulp.src(srcPath.sass).pipe(sass()).pipe(cache(cssMin())).pipe(gulp.dest(packPath.css));
+    });
+
     gulp.task('server', function() {
         server.server({
             //root: 'content',
@@ -65,6 +72,9 @@ let gulp   = require('gulp'),
         watch(srcPath.css,function(){
             runSequence('css-min');
         });
+        watch(srcPath.sass,function(){
+            runSequence('sass');
+        });
         watch(srcPath.html,function(){
             runSequence('copy-demo');
         });
@@ -77,5 +87,5 @@ let gulp   = require('gulp'),
      });
 
     gulp.task('default',function(){
-        runSequence('copy-demo','js-min','css-min','img-min','server-watch');
+        runSequence('copy-demo','js-min','sass','css-min','img-min','server-watch');
     })
