@@ -7,9 +7,9 @@ let gulp   = require('gulp'),
     changed = require('gulp-changed'),
     gutil = require('gulp-util'),
     cache = require('gulp-cache'),
-    webpack = require('gulp-webpack'),
     server = require('gulp-connect'),
     runSequence = require('run-sequence'),
+    watch  = require('gulp-watch'),
 
     mainSrc = 'content/src/',
     //源文件
@@ -47,9 +47,6 @@ let gulp   = require('gulp'),
     gulp.task('copy-demo', function() {
         return gulp.src(srcPath.html).pipe((gulp.dest(packPath.html))).pipe(server.reload());
     });
-    gulp.task('copyFileToPack', function() {
-        return gulp.src('content/src/*').pipe(gulp.dest('content/store'));
-    });
     gulp.task('server', function() {
         server.server({
             //root: 'content',
@@ -65,13 +62,20 @@ let gulp   = require('gulp'),
     });
     gulp.task('server-watch', ['server'], function() {
         gutil.log(gutil.colors.green('－－－－－－－开启监听模式－－－－－－－'));
-        gulp.watch(srcPath.css, ['css-min']);
-        gulp.watch(srcPath.html, ['copy-demo']);
-        gulp.watch(srcPath.js, ['js-min']);
-        gulp.watch(srcPath.img, ['img-min']);
+        watch(srcPath.css,function(){
+            runSequence('css-min');
+        });
+        watch(srcPath.html,function(){
+            runSequence('copy-demo');
+        });
+        watch(srcPath.js,function(){
+            runSequence('js-min');
+        });
+        watch(srcPath.img,function(){
+            runSequence('img-min');
+        });
      });
 
-
     gulp.task('default',function(){
-        runSequence('copyFileToPack','server-watch')
+        runSequence('copy-demo','js-min','css-min','img-min','server-watch');
     })
