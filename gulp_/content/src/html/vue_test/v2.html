@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="//r.uzaicdn.com/content/libs/vue/vue.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div ref="one" :count="3" is="counter" @changed="sun"></div>
+        <div ref="two" :count="2" is="counter" @changed="sun"></div>
+        <div>合：{{total}}</div>
+    </div>
+</body>
+<script>
+    var counter = {
+        props: ['count'],
+        template: '<div v-on:click="addCount">{{num}}</div>',
+        data: function () {
+            return {
+                num: this.count
+            }
+        },
+        methods: {
+            addCount: function () {
+                this.num +=2;
+                this.$emit('changed',2);
+            }
+        }
+    };
+    var app = new Vue({
+        el: '#app',
+        components: {
+            counter: counter
+        },
+        data:{
+            total:5
+        },
+        computed:{
+            
+        },
+        methods: {
+            sun: function (a) {
+                // var a=0;         //不用ref 属性的话
+                // for(let i=0; i<this.$children.length; i++){
+                //     a+=this.$children[i].num;
+                // }
+                // this.total=a;
+                this.total+=a;
+            }
+        }
+    })
+</script>
+
+</html>

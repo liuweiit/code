@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="//r.uzaicdn.com/content/libs/vue/vue.js"></script>
+</head>
+<style>
+    .active{
+        color: #009999;
+    }
+</style>
+<body>
+    <div id="app" v-bind:title="title">{{ msg }}
+        <input type="text" v-model="inputVal">
+        <p>{{inputVal}}</p>
+        <ul>
+            <li v-for='li in list' v-if="show" @click="fn2">
+                {{li.text}}
+                <p>{{li.time}}</p>
+            </li>
+        </ul>
+    </div>
+
+    <div id="app2">
+        <input type="text" v-model="msg">
+        <button v-on:click="addMsg"></button>
+        <ul>
+            <!-- <li v-for="i in todoList">{{i.text}}</li> -->
+            <li is="todoItem" v-bind:li="li" v-bind:index="i" v-on:delete="deleteMsg" v-for="(li,i) in todoList">{{i.text}}</li>
+        </ul>
+        <h1 @click="changeColor" v-bind:class="{active:activeClass}">{{fullName}}</h1>
+    </div>
+</body>
+<script>
+    let app = new Vue({
+        'el': '#app',
+        data: {
+            inputVal: '',
+            msg: 'hello world',
+            list: [{
+                'text': 'aaaaaa',
+                'time': new Date().toLocaleString()
+            }, {
+                'text': 'bbbb',
+                'time': new Date().toLocaleString()
+            }, {
+                'text': 'cccccc',
+                'time': new Date().toLocaleString()
+            },
+            ],
+            title: '页面加载于' + new Date().toLocaleString(),
+            show: true
+        },
+        methods: {
+            fn1: () => {
+                console.log(this);//window????
+            },
+            fn2: function () {
+                console.log(this);
+            }
+        }
+    });
+
+    //全局组件
+    // Vue.component('todoItem', {
+    //     props:['item'],
+    //     template:'<li>{{item.text}}</li>'
+    // });
+    //局部组件
+    var todoItem = {
+        props: ['li', 'index'],
+        template: '<li>{{li.text}}<button @click.stop="deleteItem">X</button></li>',
+        methods: {
+            deleteItem: function () {
+                this.$emit('delete', this.index); // 相当于把组件事件方法传递给实例html模板  然后事件方法调用vue 实例定义的具体方法？  第二个参数执行vue实例具体方法可以接收到？
+            }
+        }
+    }
+    let app2 = new Vue({
+        'el': '#app2',
+        components: {//组件注册到实例
+            todoItem: todoItem,
+        },
+        data: {
+            msg: '',
+            activeClass:true,
+            todoList: [
+                {
+                    text: '酸奶',
+                },
+                {
+                    text: '牛奶',
+                },
+                {
+                    text: '啊啊啊酸奶',
+                },
+            ],
+            fastName:'toggle',
+            lastName:'class'
+        },
+        methods: {//自定义方法
+            addMsg: function () {
+                if (this.msg) {
+                    this.todoList.push({
+                        text: this.msg
+                    });
+                    this.msg = '';
+                }
+            },
+            deleteMsg: function (i) {// i  是组件第二个参数传递过来的值
+                this.todoList.splice(i, 1);  //splice(index,len,[])
+            },
+            changeColor:function(){
+                this.activeClass = !this.activeClass;
+            }
+        },
+        computed:{
+            //计算属性 属性 属性
+            fullName:{
+                get:function(){
+                    return this.fastName+' '+this.lastName;
+                },
+                set:function(name){
+                    let arr = name.split(' ');
+                    this.fastName = arr[0];
+                    this.lastName = arr[1];
+                }
+            }
+        }
+    })
+</script>
+
+</html>

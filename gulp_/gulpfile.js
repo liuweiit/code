@@ -57,7 +57,7 @@ let gulp   = require('gulp'),
     gulp.task('server', function() {
         server.server({
             //root: 'content',
-            port: 8080,
+            port: 80,
             //port: 443,
             //https: true,
             host: 'r.uzaicdn.com',
